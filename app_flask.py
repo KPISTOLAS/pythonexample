@@ -25,9 +25,9 @@ def plot_to_base64(fig):
 
 @app.route('/')
 def index():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     results = {}
-    
+
     # Exercise 1 - Time series plot
     fig1, ax1 = plt.subplots(figsize=(12, 5))
     ax1.plot(df['t'], df['P'], marker='o', linestyle='-', markersize=2)
@@ -38,7 +38,7 @@ def index():
     plt.tight_layout()
     results['exercise1_plot'] = plot_to_base64(fig1)
     plt.close(fig1)
-    
+
     # Exercise 2 & 3 - Regression
     t = df['t'].values.reshape(-1, 1)
     P = df['P'].values
@@ -63,7 +63,7 @@ def index():
     plt.tight_layout()
     results['exercise3_plot'] = plot_to_base64(fig3)
     plt.close(fig3)
-    
+
     # Exercise 4 - Seasonality
     t_vals = df['t'].values
     P_vals = df['P'].values
@@ -127,7 +127,7 @@ def index():
         'plot': plot_to_base64(fig4)
     }
     plt.close(fig4)
-    
+
     # Exercise 5 - Stochasticity
     T = df['t'].values
     S_vals = df['S'].values if 'S' in df.columns else np.zeros(len(T))
@@ -142,7 +142,7 @@ def index():
     plt.tight_layout()
     results['exercise5_plot'] = plot_to_base64(fig5)
     plt.close(fig5)
-    
+
     # Exercise 6 - Histogram of Returns
     p_diffl = ((df["P"] - df["P"].shift(1)) / df["P"].shift(1)) * 100
     p_diffl_clean = p_diffl.dropna()
@@ -164,7 +164,7 @@ def index():
     plt.tight_layout()
     results['exercise6_plot'] = plot_to_base64(fig6)
     plt.close(fig6)
-    
+
     # Exercise 7 - Regression on residuals
     residuals = df['S_E'].values if 'S_E' in df.columns else df['P'].values
     regression_res = LinearRegression()
@@ -178,7 +178,7 @@ def index():
         'correlation': "R² > 0.5, έχουν συσχέτιση." if r2_res > 0.5 else "R² ≤ 0.5, δεν έχουν συσχέτιση.",
         'stationarity': "Η νέα χρονοσειρά (στοχαστικότητα) είναι στάσιμη." if regression_res.coef_[0] != 0 else "Η νέα χρονοσειρά (στοχαστικότητα) δεν είναι στάσιμη."
     }
-    
+
     # Exercise 8 - S+E plot
     P_trend = df["P'"].values if "P'" in df.columns else P
     df['S_E'] = P - P_trend
@@ -191,7 +191,7 @@ def index():
     plt.tight_layout()
     results['exercise8_plot'] = plot_to_base64(fig8)
     plt.close(fig8)
-    
+
     # Exercise 9 - Confidence Interval
     if 'PD' in df.columns:
         DP = df['PD'].dropna().values
@@ -221,7 +221,7 @@ def index():
             results['exercise9'] = {'mean': "N/A", 'std': "N/A", 'ci_lower': "N/A", 'ci_upper': "N/A"}
     else:
         results['exercise9'] = {'mean': "N/A", 'std': "N/A", 'ci_lower': "N/A", 'ci_upper': "N/A"}
-    
+
     # Exercise 10 - VaR
     df_returns = df.copy()
     df_returns['Returns'] = df_returns['P'].pct_change() * 100
@@ -243,10 +243,10 @@ def index():
     for i, (label, value) in enumerate(percentile_values.items()):
         actual_p = percentile_mapping[label]
         if label > 100:
-            ax10.axvline(x=value, color=percentile_colors[i], linestyle='-', 
+            ax10.axvline(x=value, color=percentile_colors[i], linestyle='-',
                       linewidth=2.5, label=f'Percentile {label} ({actual_p}th) = {value:.2f}%', alpha=0.8)
         else:
-            ax10.axvline(x=value, color=percentile_colors[i], linestyle='-', 
+            ax10.axvline(x=value, color=percentile_colors[i], linestyle='-',
                       linewidth=2.5, label=f'Percentile {label} = {value:.2f}%', alpha=0.8)
     ax10.axvline(x=0, color='black', linestyle='-', linewidth=1, alpha=0.5)
     ax10.set_title("Κατανομή Αποδόσεων και Percentiles (80, 90, 110, 120)", fontsize=14, fontweight='bold')
@@ -260,7 +260,7 @@ def index():
         'var_results': var_results
     }
     plt.close(fig10)
-    
+
     # Exercise 11 - Hurst Index
     P_hurst = df['P'].values
     n_hurst = len(P_hurst)
@@ -330,7 +330,7 @@ def index():
         'interpretation': interpretation_hurst,
         'memory_type': memory_type_hurst
     }
-    
+
     # Exercise 12 - Autocorrelation
     def autocorr(x, max_lag=50):
         n = len(x)
@@ -349,6 +349,12 @@ def index():
         return np.array(autocorrs)
     P_autocorr = df['P'].values
     autocorr_P = autocorr(P_autocorr, max_lag=50)
+    t = df['t'].values.reshape(-1, 1)
+    P = df['P'].values
+    reg = LinearRegression()
+    reg.fit(t, P)
+    P_pred = reg.predict(t)
+    df['S_E'] = P - P_pred
     residuals_autocorr = df['S_E'].values
     autocorr_residuals = autocorr(residuals_autocorr, max_lag=50)
     lags = np.arange(len(autocorr_P))
@@ -376,7 +382,7 @@ def index():
         'plot': plot_to_base64(fig12)
     }
     plt.close(fig12)
-    
+
     # Exercise 13 - Phase plots
     s_e_vals = df['S_E'].values if 'S_E' in df.columns else df['P'].values
     diff_S_E = np.diff(s_e_vals)
@@ -404,7 +410,7 @@ def index():
     plt.tight_layout()
     results['exercise13_plot'] = plot_to_base64(fig13)
     plt.close(fig13)
-    
+
     # Exercise 14 - Phase portrait
     diff_residuals = np.diff(s_e_vals)
     X_n_14 = s_e_vals[:-1]
@@ -420,7 +426,7 @@ def index():
     plt.tight_layout()
     results['exercise14_plot'] = plot_to_base64(fig14)
     plt.close(fig14)
-    
+
     # Exercise 15 - Moving average differences
     df_ma = df.copy()
     df_ma['MA_20'] = df_ma['P'].rolling(window=20, min_periods=1).mean()
@@ -434,7 +440,7 @@ def index():
         'b': f"{regression_ma.coef_[0]:.2f}",
         'stationarity': "Η χρονοσειρά δεν είναι στάσιμη." if regression_ma.coef_[0] != 0 else "Η χρονοσειρά είναι στάσιμη."
     }
-    
+
     # Exercise 16 - Moving averages
     t_16 = df['t'].values
     df_16 = df.copy()
@@ -455,7 +461,7 @@ def index():
     plt.tight_layout()
     results['exercise16_plot'] = plot_to_base64(fig16)
     plt.close(fig16)
-    
+
     # Exercise 17 - ATR and stability
     import os
     hlc_path = "../dataset_processed_hlc.csv"
@@ -497,12 +503,12 @@ def index():
         'atr': f"{ATR:.2f}",
         'stability': stability
     }
-    
+
     return render_template('index.html', results=results)
 
 @app.route('/exercise/1')
 def exercise1():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(df['t'], df['P'], marker='o', linestyle='-', markersize=2)
     ax.set_title("Χρονοσειρά της Τιμής (P)")
@@ -516,38 +522,38 @@ def exercise1():
 
 @app.route('/exercise/2')
 def exercise2():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     t = df['t'].values.reshape(-1, 1)
     P = df['P'].values
-    
+
     regression = LinearRegression()
     regression.fit(t, P)
     P_pred = regression.predict(t)
-    
+
     a = f"{regression.intercept_:.2f}"
     b = f"{regression.coef_[0]:.2f}"
     r2 = r2_score(P, P_pred)
     r2_str = f"{r2:.4f}"
-    
+
     correlation = "R² > 0.5, έχουν συσχέτιση." if r2 > 0.5 else "R² ≤ 0.5, δεν έχουν συσχέτιση."
     stationarity = "Η χρονοσειρά δεν είναι στάσιμη." if regression.coef_[0] != 0 else "Η χρονοσειρά είναι στάσιμη."
-    
+
     return render_template('exercise2.html', a=a, b=b, r2=r2_str, correlation=correlation, stationarity=stationarity)
 
 @app.route('/exercise/3')
 def exercise3():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     t = df['t'].values.reshape(-1, 1)
     P = df['P'].values
-    
+
     regression = LinearRegression()
     regression.fit(t, P)
     P_pred = regression.predict(t)
-    
+
     a = f"{regression.intercept_:.2f}"
     b = f"{regression.coef_[0]:.2f}"
     r2 = f"{r2_score(P, P_pred):.4f}"
-    
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.scatter(t, P, alpha=0.6, color='blue', s=20)
     ax.plot(t, P_pred, color='red', linewidth=2, label=f'P = {a} + {b}*t')
@@ -563,36 +569,36 @@ def exercise3():
 
 @app.route('/exercise/4')
 def exercise4():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     t = df['t'].values
     P = df['P'].values
     n = len(t)
     S_E_values = df["S_E"].values if "S_E" in df.columns else P
-    
+
     S_E_fft = S_E_values[-512:] if len(S_E_values) >= 512 else S_E_values
     n_fft = len(S_E_fft)
     fa_result = np.fft.fft(S_E_fft)
     amplitudes = np.abs(fa_result) / n_fft
-    
+
     peaks = []
     for i in range(1, min(n_fft//2, 100)):
         if amplitudes[i] > 0:
             period_candidate = n_fft / i if i > 0 else 1
             peaks.append((i, amplitudes[i], period_candidate))
-    
+
     peaks.sort(key=lambda x: x[1], reverse=True)
-    
+
     MIN_PERIOD = 2
     MAX_PERIOD = 52
     peak_index = None
     max_amplitude = 0
-    
+
     for p_idx, amp, period in peaks[:20]:
         if MIN_PERIOD <= period <= MAX_PERIOD:
             peak_index = p_idx
             max_amplitude = amp
             break
-    
+
     if peak_index is None:
         PERIOD = 6
         peak_index = int(n_fft / PERIOD) if n_fft >= PERIOD else 1
@@ -600,7 +606,7 @@ def exercise4():
     else:
         PERIOD = max(int(n_fft / peak_index), MIN_PERIOD) if peak_index > 0 else MIN_PERIOD
         PERIOD = min(max(PERIOD, MIN_PERIOD), MAX_PERIOD)
-    
+
     MAX_VALUES = 20
     seasonal_indices = []
     for pos in range(PERIOD):
@@ -614,12 +620,12 @@ def exercise4():
             seasonal_indices.append(avg_value)
         else:
             seasonal_indices.append(0)
-    
+
     S = []
     for idx in range(n):
         pos_in_cycle = idx % PERIOD
         S.append(seasonal_indices[pos_in_cycle])
-    
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(df['t'], S, label='S')
     ax.set_xlabel('Time (t)')
@@ -630,18 +636,18 @@ def exercise4():
     plt.tight_layout()
     img = plot_to_base64(fig)
     plt.close(fig)
-    
+
     return render_template('exercise4.html', period=PERIOD, peak_index=peak_index, max_amplitude=f"{max_amplitude:.2f}", plot=img)
 
 @app.route('/exercise/5')
 def exercise5():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     T = df['t'].values
     S = df['S'].values if 'S' in df.columns else np.zeros(len(T))
     S_E = df['S_E'].values if 'S_E' in df.columns else df['P'].values
-    
+
     E = S_E - S
-    
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(T, E)
     ax.set_xlabel('Time (t)')
@@ -655,23 +661,23 @@ def exercise5():
 
 @app.route('/exercise/6')
 def exercise6():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     p_diffl = ((df["P"] - df["P"].shift(1)) / df["P"].shift(1)) * 100
     p_diffl_clean = p_diffl.dropna()
-    
+
     pososta = [-np.inf, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, np.inf]
     counts, bins = np.histogram(p_diffl_clean, bins=pososta)
-    
+
     intervals = ['(...-5)', '(-4,-3)', '(-3,-2)', '(-2,-1)', '(-1,0)', '(0,0...1)', '(1...2)', '(2...3)', '(3...4)', '(4...)']
-    
+
     if len(counts) == 11 and len(intervals) == 10:
         counts_selected = np.concatenate([counts[0:1], counts[2:]])
         counts = counts_selected
-    
+
     intervals_8 = intervals[1:9]
     midpoints = [-3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5]
     counts_8 = counts[1:9]
-    
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.bar(midpoints, counts_8, width=0.8, edgecolor='black', alpha=0.7, color='skyblue', label='Returns')
     ax.set_xlabel('Returns (Midpoints)')
@@ -685,33 +691,33 @@ def exercise6():
 
 @app.route('/exercise/7')
 def exercise7():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     residuals = df['S_E'].values if 'S_E' in df.columns else df['P'].values
     t = df['t'].values.reshape(-1, 1)
-    
+
     regression = LinearRegression()
     regression.fit(t, residuals)
     P_pred = regression.predict(t)
-    
+
     a = f"{regression.intercept_:.2f}"
     b = f"{regression.coef_[0]:.2f}"
     r2 = r2_score(residuals, P_pred)
     r2_str = f"{r2:.4f}"
-    
+
     correlation = "R² > 0.5, έχουν συσχέτιση." if r2 > 0.5 else "R² ≤ 0.5, δεν έχουν συσχέτιση."
     stationarity = "Η νέα χρονοσειρά (στοχαστικότητα) είναι στάσιμη." if regression.coef_[0] != 0 else "Η νέα χρονοσειρά (στοχαστικότητα) δεν είναι στάσιμη."
-    
+
     return render_template('exercise7.html', a=a, b=b, r2=r2_str, correlation=correlation, stationarity=stationarity)
 
 @app.route('/exercise/8')
 def exercise8():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     t = df['t'].values.reshape(-1, 1)
     P = df['P'].values
     P_trend = df["P'"].values if "P'" in df.columns else P
-    
+
     df['S_E'] = P - P_trend
-    
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(df['t'], df['S_E'])
     ax.set_xlabel('Time (t)')
@@ -725,8 +731,8 @@ def exercise8():
 
 @app.route('/exercise/9')
 def exercise9():
-    df = pd.read_csv("dataset_processed.csv")
-    
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
+
     # ypologizoume tis posostiakes prwtes diaforeseis
     if 'PD' in df.columns:
         DP = df['PD'].dropna().values
@@ -735,76 +741,76 @@ def exercise9():
         p_diffl = ((df["P"] - df["P"].shift(1)) / df["P"].shift(1)) * 100
         p_diffl_clean = p_diffl.dropna()
         DP = p_diffl_clean.values
-    
+
     # Check if we have valid data
     if len(DP) == 0 or np.all(np.isnan(DP)):
-        return render_template('exercise9.html', 
-                             mean="N/A", 
-                             std="N/A", 
-                             ci_lower="N/A", 
+        return render_template('exercise9.html',
+                             mean="N/A",
+                             std="N/A",
+                             ci_lower="N/A",
                              ci_upper="N/A")
-    
+
     # Remove any remaining NaN values
     DP = DP[~np.isnan(DP)]
-    
+
     if len(DP) == 0:
-        return render_template('exercise9.html', 
-                             mean="N/A", 
-                             std="N/A", 
-                             ci_lower="N/A", 
+        return render_template('exercise9.html',
+                             mean="N/A",
+                             std="N/A",
+                             ci_lower="N/A",
                              ci_upper="N/A")
-    
+
     mean = np.mean(DP)
     std = np.std(DP, ddof=0)
     n = len(DP)
-    
+
     confidence_level = 0.95
     t1 = std / np.sqrt(n)
     t_value = stats.t.ppf((1 + confidence_level) / 2, df=n-1)
-    
+
     margin_error = t_value * t1
     ci_lower = mean - margin_error
     ci_upper = mean + margin_error
-    
-    return render_template('exercise9.html', 
-                         mean=f"{mean:.2f}", 
-                         std=f"{std:.2f}", 
-                         ci_lower=f"{ci_lower:.2f}", 
+
+    return render_template('exercise9.html',
+                         mean=f"{mean:.2f}",
+                         std=f"{std:.2f}",
+                         ci_lower=f"{ci_lower:.2f}",
                          ci_upper=f"{ci_upper:.2f}")
 
 @app.route('/exercise/10')
 def exercise10():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     df['Returns'] = df['P'].pct_change() * 100
     df = df.dropna()
-    
+
     confidence_levels = [50, 60, 70, 80, 85, 90, 95, 99, 99.5, 99.9]
     returns = df['Returns'].values
-    
+
     var_results = {}
     for conf in confidence_levels:
         percentile = 100 - conf
         var = -np.percentile(returns, percentile)
         var_results[conf] = var
-    
+
     percentile_mapping = {80: 80, 90: 90, 110: 10, 120: 20}
     percentile_values = {}
     for label, p in percentile_mapping.items():
         percentile_values[label] = np.percentile(returns, p)
-    
+
     fig, ax = plt.subplots(figsize=(14, 7))
     ax.hist(returns, bins=50, edgecolor='black', alpha=0.7, color='skyblue', label='Αποδόσεις')
-    
+
     percentile_colors = ['green', 'blue', 'purple', 'orange']
     for i, (label, value) in enumerate(percentile_values.items()):
         actual_p = percentile_mapping[label]
         if label > 100:
-            ax.axvline(x=value, color=percentile_colors[i], linestyle='-', 
+            ax.axvline(x=value, color=percentile_colors[i], linestyle='-',
                       linewidth=2.5, label=f'Percentile {label} ({actual_p}th) = {value:.2f}%', alpha=0.8)
         else:
-            ax.axvline(x=value, color=percentile_colors[i], linestyle='-', 
+            ax.axvline(x=value, color=percentile_colors[i], linestyle='-',
                       linewidth=2.5, label=f'Percentile {label} = {value:.2f}%', alpha=0.8)
-    
+
     ax.axvline(x=0, color='black', linestyle='-', linewidth=1, alpha=0.5)
     ax.set_title("Κατανομή Αποδόσεων και Percentiles (80, 90, 110, 120)", fontsize=14, fontweight='bold')
     ax.set_xlabel("Απόδοση (%)", fontsize=12)
@@ -818,34 +824,34 @@ def exercise10():
 
 @app.route('/exercise/11')
 def exercise11():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     P = df['P'].values
     n = len(P)
-    
+
     # Use last 567 points if available, otherwise use all
     if n >= 567:
         P = P[-567:]
         n = 567
-    
+
     P_mean = np.mean(P)
     Deviations = P - P_mean
     R = np.max(Deviations) - np.min(Deviations)
     S = np.std(Deviations)
     RS = R / S
-    
+
     # Split into 3 segments
     segment_size = n // 3
     Aggregate_Deviations0 = []
     Aggregate_Deviations1 = []
     Aggregate_Deviations2 = []
-    
+
     # Segment 0
     for i in range(segment_size):
         if i == 0:
             Aggregate_Deviations0.append(Deviations[i])
         else:
             Aggregate_Deviations0.append(Deviations[i] + Aggregate_Deviations0[i-1])
-    
+
     # Segment 1
     for i in range(segment_size, 2*segment_size):
         idx = i - segment_size
@@ -853,7 +859,7 @@ def exercise11():
             Aggregate_Deviations1.append(Deviations[i])
         else:
             Aggregate_Deviations1.append(Deviations[i] + Aggregate_Deviations1[idx-1])
-    
+
     # Segment 2
     for i in range(2*segment_size, n):
         idx = i - 2*segment_size
@@ -861,33 +867,33 @@ def exercise11():
             Aggregate_Deviations2.append(Deviations[i])
         else:
             Aggregate_Deviations2.append(Deviations[i] + Aggregate_Deviations2[idx-1])
-    
+
     # Calculate R/S for each segment
     R0 = np.max(Aggregate_Deviations0) - np.min(Aggregate_Deviations0)
     S0 = np.std(Aggregate_Deviations0) if len(Aggregate_Deviations0) > 1 else 1
     RS0 = R0 / S0 if S0 > 0 else 0
-    
+
     R1 = np.max(Aggregate_Deviations1) - np.min(Aggregate_Deviations1)
     S1 = np.std(Aggregate_Deviations1) if len(Aggregate_Deviations1) > 1 else 1
     RS1 = R1 / S1 if S1 > 0 else 0
-    
+
     R2 = np.max(Aggregate_Deviations2) - np.min(Aggregate_Deviations2)
     S2 = np.std(Aggregate_Deviations2) if len(Aggregate_Deviations2) > 1 else 1
     RS2 = R2 / S2 if S2 > 0 else 0
-    
+
     RS_mean = (RS0 + RS1 + RS2) / 3 if (RS0 > 0 and RS1 > 0 and RS2 > 0) else RS
-    
+
     # Calculate Hurst exponent
     val1 = 1
     val2 = log(n)
     val3 = log(RS_mean) if RS_mean > 0 else log(RS)
     val4 = log(RS) if RS > 0 else 0
-    
+
     if val2 > val1 and val4 > 0:
         H = (val4 - val3) / (val2 - val1)
     else:
         H = 0.5
-    
+
     # Interpretation
     if 0.45 <= H <= 0.55:
         interpretation = f"H = {H:.4f} (περίπου 0.45-0.55): Ο Hurst είναι ΑΔΙΑΦΟΡΟΣ. Η χρονοσειρά ακολουθεί random walk. Δεν υπάρχει σαφής κατεύθυνση."
@@ -898,8 +904,8 @@ def exercise11():
     else:  # H > 0.55
         interpretation = f"H = {H:.4f} > 0.55: Η χρονοσειρά έχει ΑΝΟΔΙΚΗ ΠΟΡΕΙΑ. Υπάρχει μακροπρόθεσμη μνήμη. Οι τάσεις τείνουν να συνεχίζονται."
         memory_type = "ΑΝΟΔΙΚΗ ΠΟΡΕΙΑ (ΜΑΚΡΟΠΡΟΘΕΣΜΗ ΜΝΗΜΗ)"
-    
-    return render_template('exercise11.html', 
+
+    return render_template('exercise11.html',
                          H=f"{H:.4f}",
                          RS0=f"{RS0:.4f}",
                          RS1=f"{RS1:.4f}",
@@ -911,8 +917,8 @@ def exercise11():
 
 @app.route('/exercise/12')
 def exercise12():
-    df = pd.read_csv("dataset_processed.csv")
-    
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
+
     def autocorr(x, max_lag=50):
         n = len(x)
         mean = np.mean(x)
@@ -928,21 +934,27 @@ def exercise12():
                 else:
                     autocorrs.append(0.0)
         return np.array(autocorrs)
-    
+
     # arxiki timeseira (P)
     P = df['P'].values
     # ypologizoume to autocorr
     autocorr_P = autocorr(P, max_lag=50)
-    
-    # timeseira apo to step 5
+
+    # timeseira apo to step 5 - compute S_E if it doesn't exist
+    if 'S_E' not in df.columns:
+        t = df['t'].values.reshape(-1, 1)
+        reg = LinearRegression()
+        reg.fit(t, P)
+        P_pred = reg.predict(t)
+        df['S_E'] = P - P_pred
     residuals = df['S_E'].values
     autocorr_residuals = autocorr(residuals, max_lag=50)
-    
+
     lags = np.arange(len(autocorr_P))
-    
+
     # Γράφημα σύγκρισης
     fig, axes = plt.subplots(2, 1, figsize=(10, 10))
-    
+
     # Αρχική χρονοσειρά
     axes[0].plot(lags, autocorr_P, marker='o', linestyle='-', markersize=3, color='blue')
     axes[0].axhline(y=0, color='black', linestyle='-', linewidth=1)
@@ -951,7 +963,7 @@ def exercise12():
     axes[0].set_ylabel("Αυτοσυσχέτιση")
     axes[0].grid(True, alpha=0.3)
     axes[0].set_xlim(0, 50)
-    
+
     # Χρονοσειρά στοχαστικότητας
     axes[1].plot(lags, autocorr_residuals, marker='o', linestyle='-', markersize=3, color='red')
     axes[1].axhline(y=0, color='black', linestyle='-', linewidth=1)
@@ -960,12 +972,12 @@ def exercise12():
     axes[1].set_ylabel("Αυτοσυσχέτιση")
     axes[1].grid(True, alpha=0.3)
     axes[1].set_xlim(0, 50)
-    
+
     plt.tight_layout()
     img = plot_to_base64(fig)
     plt.close(fig)
-    
-    return render_template('exercise12.html', 
+
+    return render_template('exercise12.html',
                          ac_original_lag1=f"{autocorr_P[1]:.4f}",
                          ac_original_max=f"{np.max(autocorr_P[1:]):.4f}",
                          ac_residuals_lag1=f"{autocorr_residuals[1]:.4f}",
@@ -974,13 +986,13 @@ def exercise12():
 
 @app.route('/exercise/13')
 def exercise13():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     s_e_values = df['S_E'].values if 'S_E' in df.columns else df['P'].values
-    
+
     diff_S_E = np.diff(s_e_values)
     X_n = s_e_values[:-1]
     X_n1 = s_e_values[1:]
-    
+
     fig, axes = plt.subplots(3, 1, figsize=(10, 12))
     axes[0].plot(df['t'][:-1], X_n, marker='o', linestyle='-', markersize=3, alpha=0.7, color='blue')
     axes[0].axhline(y=0, color='black', linestyle='--', linewidth=1)
@@ -988,21 +1000,21 @@ def exercise13():
     axes[0].set_xlabel("Χρόνος (t)")
     axes[0].set_ylabel("X_n")
     axes[0].grid(True, alpha=0.3)
-    
+
     axes[1].plot(df['t'][1:], X_n1, marker='o', linestyle='-', markersize=3, alpha=0.7, color='green')
     axes[1].axhline(y=0, color='black', linestyle='--', linewidth=1)
     axes[1].set_title("E_{n+1} (Χρονοσειρά Καταλοίπων - Επόμενη Περίοδος)")
     axes[1].set_xlabel("Χρόνος (t)")
     axes[1].set_ylabel("X_{n+1}")
     axes[1].grid(True, alpha=0.3)
-    
+
     axes[2].plot(df['t'][1:], diff_S_E, marker='o', linestyle='-', markersize=3, alpha=0.7, color='red')
     axes[2].axhline(y=0, color='black', linestyle='--', linewidth=1)
     axes[2].set_title("X_{n+1} - X_n (Πρώτες Διαφορές Καταλοίπων)")
     axes[2].set_xlabel("Χρόνος (t)")
     axes[2].set_ylabel("X_{n+1} - X_n")
     axes[2].grid(True, alpha=0.3)
-    
+
     plt.tight_layout()
     img = plot_to_base64(fig)
     plt.close(fig)
@@ -1010,13 +1022,13 @@ def exercise13():
 
 @app.route('/exercise/14')
 def exercise14():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     s_e_values = df['S_E'].values if 'S_E' in df.columns else df['P'].values
-    
+
     diff_residuals = np.diff(s_e_values)
     X_n = s_e_values[:-1]
     X_diff = diff_residuals
-    
+
     fig, ax = plt.subplots(figsize=(10, 8))
     ax.scatter(X_n, X_diff, alpha=0.5, s=10, color='blue')
     ax.axhline(y=0, color='black', linestyle='--', linewidth=1, alpha=0.5)
@@ -1032,42 +1044,42 @@ def exercise14():
 
 @app.route('/exercise/15')
 def exercise15():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     df['MA_20'] = df['P'].rolling(window=20, min_periods=1).mean()
     df['dMA_20'] = df['MA_20'].diff()
     df_clean = df[['t', 'dMA_20']].dropna()
     t = df_clean['t'].values.reshape(-1, 1)
-    
+
     regression = LinearRegression()
     regression.fit(t, df_clean['dMA_20'])
-    
+
     a = f"{regression.intercept_:.2f}"
     b = f"{regression.coef_[0]:.2f}"
     stationarity = "Η χρονοσειρά δεν είναι στάσιμη." if regression.coef_[0] != 0 else "Η χρονοσειρά είναι στάσιμη."
-    
+
     return render_template('exercise15.html', a=a, b=b, stationarity=stationarity)
 
 @app.route('/exercise/16')
 def exercise16():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     t = df['t'].values
     df['MO_20'] = df['P'].rolling(window=20, min_periods=1).mean()
     df['MO_50'] = df['P'].rolling(window=50, min_periods=1).mean()
-    
+
     fig, axs = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
     axs[0].plot(t, df['MO_20'], label='MO_20')
     axs[0].set_ylabel('MO_20')
     axs[0].set_title('Kinitos Mesos Oro 20')
     axs[0].grid(True, alpha=0.3)
     axs[0].legend()
-    
+
     axs[1].plot(t, df['MO_50'], label='MO_50', color='orange')
     axs[1].set_xlabel('Time (t)')
     axs[1].set_ylabel('MO_50')
     axs[1].set_title('Kinitos Mesos Oro 50')
     axs[1].grid(True, alpha=0.3)
     axs[1].legend()
-    
+
     plt.tight_layout()
     img = plot_to_base64(fig)
     plt.close(fig)
@@ -1076,7 +1088,7 @@ def exercise16():
 @app.route('/exercise/17')
 def exercise17():
     import os
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     hlc_path = "../dataset_processed_hlc.csv"
     if not os.path.exists(hlc_path):
         hlc_path = "dataset_processed_hlc.csv"
@@ -1088,13 +1100,13 @@ def exercise17():
         df2['Close'] = df['P'].values
         df2['High'] = df['P'].values * 1.01
         df2['Low'] = df['P'].values * 0.99
-    
+
     P = df['P'].values
     cl = df2['Close'].values[-500:] if len(df2) >= 500 else df2['Close'].values
     hi = df2['High'].values[-500:] if len(df2) >= 500 else df2['High'].values
     lo = df2['Low'].values[-500:] if len(df2) >= 500 else df2['Low'].values
     n2 = len(cl)
-    
+
     TR = []
     period = 50
     for i in range(n2):
@@ -1105,35 +1117,35 @@ def exercise17():
             x2 = abs(hi[i]-cl[i-1])
             x3 = abs(lo[i]-cl[i-1])
             TR.append(max(x1, x2, x3))
-    
+
     ATR = np.mean(TR)
-    
+
     mean_all = np.mean(P)
     std_all = np.std(P)
     all_cv = std_all / mean_all
-    
+
     if all_cv < 0.3:
         stability = "Η χρονοσειρά είναι σταθερή."
     elif all_cv < 0.5:
         stability = "Η χρονοσειρά είναι ασθενώς ασταθής."
     else:
         stability = "Η χρονοσειρά είναι ασταθής."
-    
+
     return render_template('exercise17.html', atr=f"{ATR:.2f}", stability=stability)
 
 @app.route('/exercise/18')
 def exercise18():
-    df = pd.read_csv("dataset_processed.csv")
+    df = pd.read_csv("/home/kopisto/pythonexample/dataset_processed.csv")
     P = df['P'].values
     t = df['t'].values.reshape(-1, 1)
     n = len(P)
-    
+
     # Basic characteristics
     mean_P = np.mean(P)
     std_P = np.std(P)
     min_P = np.min(P)
     max_P = np.max(P)
-    
+
     # Trend analysis
     regression = LinearRegression()
     regression.fit(t, P)
@@ -1144,16 +1156,16 @@ def exercise18():
     has_trend = b != 0
     trend_direction = "ΑΝΟΔΙΚΗ" if b > 0 else "ΚΑΘΟΔΙΚΗ" if b < 0 else "ΟΥΔΕΤΕΡΗ"
     trend_strength = "ΙΣΧΥΡΗ" if abs(r2) > 0.7 else "ΜΕΤΡΙΑ" if abs(r2) > 0.3 else "ΑΣΘΕΝΗΣ"
-    
+
     # Stationarity of original series
     result_original = adfuller(P, autolag='AIC')
     is_original_stationary = result_original[1] < 0.05
-    
+
     # Residuals analysis
     residuals = P - P_pred
     result_residuals = adfuller(residuals, autolag='AIC')
     is_residuals_stationary = result_residuals[1] < 0.05
-    
+
     # Hurst index
     P_hurst = P[-567:] if len(P) >= 567 else P
     n_hurst = len(P_hurst)
@@ -1203,7 +1215,7 @@ def exercise18():
         H = 0.5
     has_long_memory = H > 0.55
     memory_type = "ΑΝΟΔΙΚΗ ΠΟΡΕΙΑ (ΜΑΚΡΟΠΡΟΘΕΣΜΗ ΜΝΗΜΗ)" if H > 0.55 else "ΚΑΘΟΔΙΚΗ ΠΟΡΕΙΑ" if H < 0.45 else "ΑΔΙΑΦΟΡΟΣ"
-    
+
     # Autocorrelation
     def autocorr(x, lag=1):
         n_ac = len(x)
@@ -1214,7 +1226,7 @@ def exercise18():
     ac_original = autocorr(P, lag=1)
     ac_residuals = autocorr(residuals, lag=1)
     has_high_autocorr = abs(ac_original) > 0.5
-    
+
     # Instability
     mid_point = n // 2
     first_half = P[:mid_point]
@@ -1223,7 +1235,7 @@ def exercise18():
     mean_second = np.mean(second_half)
     change_pct = abs(mean_second - mean_first) / mean_first * 100 if mean_first > 0 else 0
     has_instability = change_pct > 10
-    
+
     # Stability from exercise 17
     import os
     hlc_path = "../dataset_processed_hlc.csv"
@@ -1257,7 +1269,7 @@ def exercise18():
         stability_status = "ΑΣΘΕΝΩΣ ΑΣΤΑΘΗΣ"
     else:
         stability_status = "ΑΣΤΑΘΗΣ"
-    
+
     # Create summary plot
     fig, axes = plt.subplots(2, 1, figsize=(12, 10))
     axes[0].plot(df['t'], P, label='Χρονοσειρά (P)', color='blue', alpha=0.6, linewidth=1)
@@ -1277,7 +1289,7 @@ def exercise18():
     plt.tight_layout()
     summary_plot = plot_to_base64(fig)
     plt.close(fig)
-    
+
     return render_template('exercise18.html',
                          n=n,
                          mean_P=f"{mean_P:.2f}",
