@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 3 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 3</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Ο υπολογισμός της συνάρτηση της τάσης.</p>
+    </div>
+    <div class="results">
+        <p><strong>Εξίσωση:</strong> P = {{ a }} + {{ b }} × t</p>
+        <p><strong>R²:</strong> {{ r2 }}</p>
+    </div>
+    <img src="data:image/png;base64,{{ plot }}" alt="Παλινδρόμηση">
+</article>
+{% endblock %}
+

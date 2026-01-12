@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Αρχική - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Σύνοψη Αποτελεσμάτων - Όλες οι Ασκήσεις</h2>
+    
+    <div class="dataset-info">
+        <p><strong>Δεδομένα:</strong> Dow Jones Industrial Average (DJIA) Index</p>
+        <p><strong>Περίοδος:</strong> από 2015-01-04 μέχρι 2025-11-23</p>
+    </div>
+    
+    <!-- Exercise 1 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 1: Χρονοσειρά της Τιμής (P)</h3>
+        <img src="data:image/png;base64,{{ results.exercise1_plot }}" alt="Χρονοσειρά της Τιμής" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 2 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 2: Παλινδρόμηση με R²</h3>
+        <div class="stats">
+            <p><strong>Εξίσωση:</strong> P = {{ results.exercise2.a }} + {{ results.exercise2.b }} × t</p>
+            <p><strong>R²:</strong> {{ results.exercise2.r2 }}</p>
+            <p><strong>Συσχέτιση:</strong> {{ results.exercise2.correlation }}</p>
+            <p><strong>Στασιμότητα:</strong> {{ results.exercise2.stationarity }}</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 3 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 3: Παλινδρόμηση Τάσης</h3>
+        <p><strong>Εξίσωση:</strong> P = {{ results.exercise2.a }} + {{ results.exercise2.b }} × t</p>
+        <p><strong>R²:</strong> {{ results.exercise2.r2 }}</p>
+        <img src="data:image/png;base64,{{ results.exercise3_plot }}" alt="Παλινδρόμηση Τάσης" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 4 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 4: Κυκλικότητα (Seasonality)</h3>
+        <div class="stats">
+            <p><strong>Περίοδος:</strong> {{ results.exercise4.period }}</p>
+            <p><strong>Peak Index:</strong> {{ results.exercise4.peak_index }}</p>
+            <p><strong>Max Amplitude:</strong> {{ results.exercise4.max_amplitude }}</p>
+        </div>
+        <img src="data:image/png;base64,{{ results.exercise4.plot }}" alt="Κυκλικότητα" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 5 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 5: Στοχαστικότητα</h3>
+        <img src="data:image/png;base64,{{ results.exercise5_plot }}" alt="Στοχαστικότητα" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 6 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 6: Ιστόγραμμα Αποδόσεων</h3>
+        <img src="data:image/png;base64,{{ results.exercise6_plot }}" alt="Ιστόγραμμα Αποδόσεων" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 7 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 7: Παλινδρόμηση Καταλοίπων</h3>
+        <div class="stats">
+            <p><strong>Εξίσωση:</strong> P = {{ results.exercise7.a }} + {{ results.exercise7.b }} × t</p>
+            <p><strong>R²:</strong> {{ results.exercise7.r2 }}</p>
+            <p><strong>Συσχέτιση:</strong> {{ results.exercise7.correlation }}</p>
+            <p><strong>Στασιμότητα:</strong> {{ results.exercise7.stationarity }}</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 8 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 8: S+E = P - P'</h3>
+        <img src="data:image/png;base64,{{ results.exercise8_plot }}" alt="S+E" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 9 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 9: Διάστημα Εμπιστοσύνης</h3>
+        <div class="stats">
+            <p><strong>Μέσος Όρος:</strong> {{ results.exercise9.mean }}</p>
+            <p><strong>Τυπική Απόκλιση:</strong> {{ results.exercise9.std }}</p>
+            <p><strong>95% Διάστημα Εμπιστοσύνης:</strong> [{{ results.exercise9.ci_lower }}, {{ results.exercise9.ci_upper }}]</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 10 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 10: VaR και Percentiles</h3>
+        <img src="data:image/png;base64,{{ results.exercise10.plot }}" alt="VaR και Percentiles" style="max-width: 100%;">
+        {% if results.exercise10.var_results %}
+        <div class="var-table">
+            <h4>VaR Results:</h4>
+            <table>
+                <tr>
+                    <th>Confidence Level</th>
+                    <th>VaR</th>
+                </tr>
+                {% for conf, var in results.exercise10.var_results.items() %}
+                <tr>
+                    <td>{{ conf }}%</td>
+                    <td>{{ "%.4f"|format(var) }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </section>
+    
+    <!-- Exercise 11 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 11: Δείκτης Hurst και Μακροπρόθεσμη Μνήμη</h3>
+        <div class="stats">
+            <h4>ΥΠΟΛΟΓΙΣΜΟΣ ΔΕΙΚΤΗ HURST</h4>
+            <p><strong>R/S για τμήμα 1:</strong> {{ results.exercise11.RS0 }}</p>
+            <p><strong>R/S για τμήμα 2:</strong> {{ results.exercise11.RS1 }}</p>
+            <p><strong>R/S για τμήμα 3:</strong> {{ results.exercise11.RS2 }}</p>
+            <p><strong>Μέσος όρος R/S:</strong> {{ results.exercise11.RS_mean }}</p>
+            <p><strong>R/S για όλη τη σειρά:</strong> {{ results.exercise11.RS }}</p>
+            <p><strong>Δείκτης Hurst (H):</strong> {{ results.exercise11.H }}</p>
+        </div>
+        <div class="interpretation">
+            <h4>ΕΡΜΗΝΕΙΑ:</h4>
+            <p><strong>Τύπος Μνήμης:</strong> {{ results.exercise11.memory_type }}</p>
+            <p>{{ results.exercise11.interpretation }}</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 12 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 12: Αυτοσυσχέτιση</h3>
+        <div class="stats">
+            <h4>ΣΥΝΤΕΛΕΣΤΕΣ ΑΥΤΟΣΥΣΧΕΤΙΣΗΣ</h4>
+            <p><strong>Αρχική Χρονοσειρά (P):</strong></p>
+            <ul>
+                <li>Αυτοσυσχέτιση lag 1: {{ results.exercise12.ac_original_lag1 }}</li>
+                <li>Μέγιστη αυτοσυσχέτιση (lag > 0): {{ results.exercise12.ac_original_max }}</li>
+            </ul>
+            <p><strong>Χρονοσειρά Στοχαστικότητας (Κατάλοιπα από βήμα 5):</strong></p>
+            <ul>
+                <li>Αυτοσυσχέτιση lag 1: {{ results.exercise12.ac_residuals_lag1 }}</li>
+                <li>Μέγιστη αυτοσυσχέτιση (lag > 0): {{ results.exercise12.ac_residuals_max }}</li>
+            </ul>
+        </div>
+        <img src="data:image/png;base64,{{ results.exercise12.plot }}" alt="Αυτοσυσχέτιση" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 13 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 13: Φασικά Διαγράμματα</h3>
+        <img src="data:image/png;base64,{{ results.exercise13_plot }}" alt="Φασικά Διαγράμματα" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 14 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 14: Φασικό Πορτραίτο</h3>
+        <img src="data:image/png;base64,{{ results.exercise14_plot }}" alt="Φασικό Πορτραίτο" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 15 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 15: Κινητός Μέσος Όρος - Διαφορές</h3>
+        <div class="stats">
+            <p><strong>Εξίσωση:</strong> P = {{ results.exercise15.a }} + {{ results.exercise15.b }} × t</p>
+            <p><strong>Στασιμότητα:</strong> {{ results.exercise15.stationarity }}</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 16 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 16: Κινητοί Μέσοι Όροι</h3>
+        <img src="data:image/png;base64,{{ results.exercise16_plot }}" alt="Κινητοί Μέσοι Όροι" style="max-width: 100%;">
+    </section>
+    
+    <!-- Exercise 17 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 17: ATR και Σταθερότητα</h3>
+        <div class="stats">
+            <p><strong>ATR (Average True Range):</strong> {{ results.exercise17.atr }}</p>
+            <p><strong>Σταθερότητα:</strong> {{ results.exercise17.stability }}</p>
+        </div>
+    </section>
+    
+    <!-- Exercise 18 -->
+    <section class="exercise-section">
+        <h3>Άσκηση 18: Συμπεράσματα</h3>
+        <p>Δείτε την <a href="{{ url_for('exercise18') }}">Άσκηση 18</a> για πλήρη ανάλυση και συμπεράσματα.</p>
+        <p><em>Σημείωση: Για τα πλήρη συμπεράσματα, παρακαλώ επισκεφτείτε την ειδική σελίδα της Άσκησης 18.</em></p>
+    </section>
+    
+</article>
+
+<style>
+.exercise-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.exercise-section h3 {
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.stats {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+}
+
+.stats p {
+    margin: 8px 0;
+}
+
+.stats ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.var-table {
+    margin-top: 20px;
+}
+
+.var-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.var-table th,
+.var-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.var-table th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.var-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+</style>
+{% endblock %}
+

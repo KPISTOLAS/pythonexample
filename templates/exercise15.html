@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 15 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 15</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Να βρεθεί η χρονοσειρά: α) του κινητού Μ.Ο. των 20 διαδοχικών βημάτων και β) των 50 διαδοχικών βημάτων και να γίνει η γραφική τους παράσταση.</p>
+    </div>
+    <div class="results">
+        <p><strong>Εξίσωση:</strong> P = {{ a }} + {{ b }} × t</p>
+        <p><strong>Στασιμότητα:</strong> {{ stationarity }}</p>
+    </div>
+</article>
+{% endblock %}
+

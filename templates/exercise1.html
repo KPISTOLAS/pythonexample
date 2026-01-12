@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 1 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 1</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Η γραφική παράσταση της χρονοσειράς.</p>
+    </div>
+    <img src="data:image/png;base64,{{ plot }}" alt="Χρονοσειρά">
+</article>
+{% endblock %}
+

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 4 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 4</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Η συνάρτηση της κυκλικότητας (ή εποχικότητας).</p>
+    </div>
+    <div class="results">
+        <p><strong>Περίοδος:</strong> {{ period }}</p>
+        <p><strong>Peak Index:</strong> {{ peak_index }}</p>
+        <p><strong>Max Amplitude:</strong> {{ max_amplitude }}</p>
+    </div>
+    <img src="data:image/png;base64,{{ plot }}" alt="Κυκλικότητα">
+</article>
+{% endblock %}
+

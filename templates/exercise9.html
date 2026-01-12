@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 9 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 9</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Ο υπολογισμός της τυπικής απόκλισης της κατανομής και να βρεθεί το διάστημα εμπιστοσύνης για 5%.</p>
+    </div>
+    <div class="stats">
+        <p><strong>Στατιστικά:</strong></p>
+        <p>Μέσος Όρος: {{ mean }}</p>
+        <p>Τυπική Απόκλιση: {{ std }}</p>
+        <p>95% Διάστημα Εμπιστοσύνης: [{{ ci_lower }}, {{ ci_upper }}]</p>
+    </div>
+</article>
+{% endblock %}

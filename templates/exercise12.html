@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 12 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 12</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Να βρεθεί ο συντελεστής αυτοσυσχέτισης της αρχικής χρονοσειράς, και αυτής που προκύπτει στο βήμα 5.</p>
+    </div>
+    
+    <div class="stats">
+        <h3>ΣΥΝΤΕΛΕΣΤΕΣ ΑΥΤΟΣΥΣΧΕΤΙΣΗΣ</h3>
+        
+        <p><strong>Αρχική Χρονοσειρά (P):</strong></p>
+        <ul>
+            <li>Αυτοσυσχέτιση lag 1: {{ ac_original_lag1 }}</li>
+            <li>Μέγιστη αυτοσυσχέτιση (lag > 0): {{ ac_original_max }}</li>
+        </ul>
+        
+        <p><strong>Χρονοσειρά Στοχαστικότητας (Κατάλοιπα από βήμα 5):</strong></p>
+        <ul>
+            <li>Αυτοσυσχέτιση lag 1: {{ ac_residuals_lag1 }}</li>
+            <li>Μέγιστη αυτοσυσχέτιση (lag > 0): {{ ac_residuals_max }}</li>
+        </ul>
+    </div>
+    
+    <img src="data:image/png;base64,{{ plot }}" alt="Αυτοσυσχέτιση">
+</article>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 10 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 10</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Υπολογισμός Ιστορικής Τιμής σε Κίνδυνο (Value at Risk - VaR).</p>
+    </div>
+    <img src="data:image/png;base64,{{ plot }}" alt="VaR και Percentiles">
+    
+    {% if var_results %}
+    <div class="var-table">
+        <h3>VaR Results:</h3>
+        <table>
+            <tr>
+                <th>Confidence Level</th>
+                <th>VaR</th>
+            </tr>
+            {% for conf, var in var_results.items() %}
+            <tr>
+                <td>{{ conf }}%</td>
+                <td>{{ "%.4f"|format(var) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+</article>
+{% endblock %}

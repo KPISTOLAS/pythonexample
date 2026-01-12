@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ανάλυση Χρονοσειράς{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>📊 Ανάλυση Χρονοσειράς</h1>
+        <p class="header-subtitle">Dow Jones Industrial Average (2015-01-04 έως 2025-11-23)</p>
+        <nav>
+            <a href="{{ url_for('index') }}">Αρχική</a>
+            <a href="{{ url_for('exercise1') }}">Άσκηση 1</a>
+            <a href="{{ url_for('exercise2') }}">Άσκηση 2</a>
+            <a href="{{ url_for('exercise3') }}">Άσκηση 3</a>
+            <a href="{{ url_for('exercise4') }}">Άσκηση 4</a>
+            <a href="{{ url_for('exercise5') }}">Άσκηση 5</a>
+            <a href="{{ url_for('exercise6') }}">Άσκηση 6</a>
+            <a href="{{ url_for('exercise7') }}">Άσκηση 7</a>
+            <a href="{{ url_for('exercise8') }}">Άσκηση 8</a>
+            <a href="{{ url_for('exercise9') }}">Άσκηση 9</a>
+            <a href="{{ url_for('exercise10') }}">Άσκηση 10</a>
+            <a href="{{ url_for('exercise11') }}">Άσκηση 11</a>
+            <a href="{{ url_for('exercise12') }}">Άσκηση 12</a>
+            <a href="{{ url_for('exercise13') }}">Άσκηση 13</a>
+            <a href="{{ url_for('exercise14') }}">Άσκηση 14</a>
+            <a href="{{ url_for('exercise15') }}">Άσκηση 15</a>
+            <a href="{{ url_for('exercise16') }}">Άσκηση 16</a>
+            <a href="{{ url_for('exercise17') }}">Άσκηση 17</a>
+            <a href="{{ url_for('exercise18') }}">Άσκηση 18</a>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2026, PistolasDev</p>
+    </footer>
+</body>
+</html>
+

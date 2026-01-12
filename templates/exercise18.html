@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Συμπεράσματα - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 18</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Να διατυπωθούν τα συμπεράσματα που προκύπτουν.</p>
+    </div>
+    
+    <div class="summary-plot">
+        <img src="data:image/png;base64,{{ summary_plot }}" alt="Σύνοψη Ανάλυσης" style="max-width: 100%;">
+    </div>
+    
+    <section class="conclusions-section">
+        <h3>ΒΑΣΙΚΑ ΧΑΡΑΚΤΗΡΙΣΤΙΚΑ</h3>
+        <div class="stats-box">
+            <p><strong>Αριθμός παρατηρήσεων:</strong> {{ n }}</p>
+            <p><strong>Μέσος όρος:</strong> {{ mean_P }}</p>
+            <p><strong>Τυπική απόκλιση:</strong> {{ std_P }}</p>
+            <p><strong>Εύρος:</strong> [{{ min_P }}, {{ max_P }}]</p>
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΤΑΣΗ (TREND)</h3>
+        <div class="stats-box">
+            <p><strong>Συντελεστής προσδιορισμού (R²):</strong> {{ r2 }}</p>
+            <p><strong>Κατεύθυνση:</strong> {{ trend_direction }} τάση</p>
+            <p><strong>Ισχύς:</strong> {{ trend_strength }}</p>
+            {% if trend_strength == "ΙΣΧΥΡΗ" %}
+            <p class="conclusion">✅ Η χρονοσειρά παρουσιάζει {{ trend_strength }} {{ trend_direction }} τάση</p>
+            {% endif %}
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΣΤΑΣΙΜΟΤΗΤΑ</h3>
+        <div class="stats-box">
+            <p><strong>Αρχική χρονοσειρά:</strong> 
+                {% if is_original_stationary %}
+                <span class="positive">✅ Στάσιμη</span>
+                {% else %}
+                <span class="negative">❌ Μη-Στάσιμη (υπάρχει τάση)</span>
+                {% endif %}
+            </p>
+            <p><strong>Κατάλοιπα (Στοχαστικότητα):</strong> 
+                {% if is_residuals_stationary %}
+                <span class="positive">✅ Στάσιμα</span>
+                {% else %}
+                <span class="negative">❌ Μη-Στάσιμα</span>
+                {% endif %}
+            </p>
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΜΑΚΡΟΠΡΟΘΕΣΜΗ ΜΝΗΜΗ (HURST EXPONENT)</h3>
+        <div class="stats-box">
+            <p><strong>Δείκτης Hurst (H):</strong> {{ H }}</p>
+            <p><strong>Τύπος Μνήμης:</strong> {{ memory_type }}</p>
+            {% if has_long_memory %}
+            <p class="conclusion">🔗 Υπάρχει ΙΣΧΥΡΗ ΜΑΚΡΟΠΡΟΘΕΣΜΗ ΜΝΗΜΗ (H = {{ H }} > 0.55)</p>
+            <p>Οι τάσεις τείνουν να συνεχίζονται (persistent behavior)</p>
+            {% endif %}
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΑΥΤΟΣΥΣΧΕΤΙΣΗ</h3>
+        <div class="stats-box">
+            <p><strong>Αυτοσυσχέτιση αρχικής χρονοσειράς (lag 1):</strong> {{ ac_original }}</p>
+            <p><strong>Αυτοσυσχέτιση καταλοίπων (lag 1):</strong> {{ ac_residuals }}</p>
+            {% if has_high_autocorr %}
+            <p class="conclusion">⚠️ Υψηλή αυτοσυσχέτιση υποδηλώνει ισχυρή εξάρτηση μεταξύ παρατηρήσεων</p>
+            {% endif %}
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΑΣΤΑΘΕΙΑ</h3>
+        <div class="stats-box">
+            <p><strong>Ποσοστιαία αλλαγή μεταξύ περιόδων:</strong> {{ change_pct }}%</p>
+            <p><strong>Κατάσταση:</strong> {{ stability_status }}</p>
+            <p><strong>ATR (Average True Range):</strong> {{ ATR }}</p>
+            {% if has_instability %}
+            <p class="conclusion">📈 Η χρονοσειρά ΠΑΡΟΥΣΙΑΖΕΙ αστάθεια στη συμπεριφορά της</p>
+            {% endif %}
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΣΥΝΟΛΙΚΑ ΣΥΜΠΕΡΑΣΜΑΤΑ</h3>
+        <div class="conclusions-list">
+            <ol>
+                <li>Η χρονοσειρά παρουσιάζει <strong>{{ trend_strength }} {{ trend_direction }} τάση</strong> με R² = {{ r2 }}.</li>
+                <li>Η αρχική χρονοσειρά <strong>{% if is_original_stationary %}ΕΙΝΑΙ{% else %}ΔΕΝ ΕΙΝΑΙ{% endif %} στάσιμη</strong> ({% if not is_original_stationary %}υπάρχει τάση{% else %}δεν υπάρχει σημαντική τάση{% endif %}).</li>
+                <li>Μετά την αφαίρεση της τάσης, τα κατάλοιπα <strong>{% if is_residuals_stationary %}ΕΙΝΑΙ{% else %}ΔΕΝ ΕΙΝΑΙ{% endif %} στάσιμα</strong>.</li>
+                {% if has_long_memory %}
+                <li>Υπάρχει <strong>ΙΣΧΥΡΗ ΜΑΚΡΟΠΡΟΘΕΣΜΗ ΜΝΗΜΗ</strong> (H = {{ H }} > 0.55). Οι τάσεις τείνουν να συνεχίζονται.</li>
+                {% else %}
+                <li>Ο δείκτης Hurst (H = {{ H }}) υποδηλώνει {{ memory_type }}.</li>
+                {% endif %}
+                {% if has_instability %}
+                <li>Η χρονοσειρά παρουσιάζει <strong>ΑΣΤΑΘΕΙΑ</strong> στη συμπεριφορά της (αλλαγή {{ change_pct }}% μεταξύ περιόδων).</li>
+                {% else %}
+                <li>Η χρονοσειρά είναι <strong>ΣΤΑΘΕΡΗ</strong> στη συμπεριφορά της.</li>
+                {% endif %}
+                {% if has_high_autocorr %}
+                <li>Υψηλή αυτοσυσχέτιση ({{ ac_original }}) υποδηλώνει <strong>εξάρτηση μεταξύ παρατηρήσεων</strong>.</li>
+                {% endif %}
+            </ol>
+        </div>
+    </section>
+    
+    <section class="conclusions-section">
+        <h3>ΣΥΣΤΑΣΕΙΣ</h3>
+        <div class="recommendations">
+            <p>Για πρόβλεψη και μοντελοποίηση, συνιστάται:</p>
+            <ul>
+                <li>Χρήση μοντέλων που λαμβάνουν υπόψη την τάση (ARIMA, SARIMA, ή μοντέλα με trend component)</li>
+                <li>Χρήση πρώτων διαφορών για στασιμοποίηση της χρονοσειράς</li>
+                {% if has_long_memory %}
+                <li>Λήψη υπόψη της μακροπρόθεσμης μνήμης (Fractional ARIMA, GARCH models)</li>
+                {% endif %}
+                {% if has_instability %}
+                <li>Μοντελοποίηση της αστάθειας/μεταβλητότητας (GARCH, Stochastic Volatility models)</li>
+                {% endif %}
+                {% if has_high_autocorr %}
+                <li>Χρήση μοντέλων που λαμβάνουν υπόψη την αυτοσυσχέτιση (AR, MA, ARMA components)</li>
+                {% endif %}
+            </ul>
+        </div>
+    </section>
+</article>
+
+<style>
+.summary-plot {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.conclusions-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+}
+
+.conclusions-section h3 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.stats-box {
+    background-color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.stats-box p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.positive {
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.negative {
+    color: #c62828;
+    font-weight: bold;
+}
+
+.conclusion {
+    background-color: #e8f5e9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.conclusions-list {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.conclusions-list ol {
+    line-height: 2;
+    font-size: 16px;
+}
+
+.recommendations {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.recommendations ul {
+    line-height: 2;
+    font-size: 16px;
+    margin-top: 10px;
+}
+</style>
+{% endblock %}
+

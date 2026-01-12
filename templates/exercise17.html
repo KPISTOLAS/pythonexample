@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Άσκηση 17 - Ανάλυση Χρονοσειράς{% endblock %}
+
+{% block content %}
+<article>
+    <h2>Άσκηση 17</h2>
+    <div class="question">
+        <p><strong>Ερώτηση:</strong> Να γίνει εκτίμηση εάν η χρονοσειρά παρουσιάζει αστάθεια στη συμπεριφορά της.</p>
+    </div>
+    <div class="results">
+        <p><strong>ATR:</strong> {{ atr }}</p>
+        <p><strong>Στασιμότητα:</strong> {{ stability }}</p>
+    </div>
+</article>
+{% endblock %}
+
